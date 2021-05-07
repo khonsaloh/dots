@@ -4,11 +4,11 @@ alias s3='cd $HOME/.local/bin/' \
 	cm='cd /usr/share' \
 	mm='cd ~/mm' \
 	usb='cd /media/usb/' \
-	bak="cd $HOME/scripts/bak" \
+	bak="cd $HOME/bak" \
 	s2='cd /usr/local/bin' \
 	e="cd /etc " \
 	..="cd .. " \
-	doc='clear && cd ~/doc' \
+	doc='cd ~/doc' \
 	b="cd /usr/bin" \
 	cf="cd  ~/.config/ " \
 	d="cd ~/descargas/" \
@@ -49,4 +49,3 @@ function cd () {
 		clear && builtin cd "${new_dir}" && lsd -Ah --group-dirs first --no-symlink
 	fi;
 }
-

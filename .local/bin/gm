@@ -30,6 +30,7 @@ clonar repo con submódulos
 (dotfiles) autoempujar
 --> limpiar historial de imagenes repo git
 --> (dotfiles) limpiar historial de imagenes
+renombrar rama (local)
 EOF
 )
 [ -z "$a" ] && exit
@@ -76,5 +77,7 @@ case $a in
 		&& git --git-dir=$gitdots --work-tree=$HOME branch -m master \
 		&& [ "$(printf "s\\nN" | dmenu -i -p "empujar a remoto(s)? ")" = "s" ] \
 		&& git --git-dir=$gitdots --work-tree=$HOME remote | xargs -L1 git --git-dir=$gitdots --work-tree=$HOME push --force --all ;;
+		"renombrar rama (local)") old="$(git branch | fzf --prompt='rama a renombrar: ' )" && \
+			printf "nombre nuevo: " && read -r new && git branch -m "$old" "$new";;
 
 esac

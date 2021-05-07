@@ -21,7 +21,7 @@ super + {_, alt + , shift + } Return
 	$HOME/.local/bin/nopath/tdrop -ma -w 1360 -y 0 st} 
 
 super + {ntilde, m}
-	{passmenu --type, $HOME/.local/bin/bookmarker}
+	{elpaso -t, $HOME/.local/bin/bookmarker}
 
 super + b
 	{polybar-msg cmd toggle; bspc config top_padding +0 ,\
@@ -55,8 +55,6 @@ XF86Audio{Next,Prev}
 {super + Menu, Menu}
 	{. $HOME/.zshrc && st -c f-terminal -e lf, $HOME/descargas/st -e htop}
 
-super + F6
-	slimlock
 super + F4
 	$HOME/.local/bin/nopath/comp
 super + F3
@@ -142,16 +140,14 @@ super + {_,shift + }n
 	bspc node -f {next,prev}.local
 
 alt + 4
-	notify-send "reproduccion de media a un maximo de 480px" \
-	-i /usr/share/icons/papirus-antix/48x48/apps/kubeplayer.png \ 
+	notify-send "▶️ reproduccion de media a un maximo de 480px" \ 
 	; mpv --really-quiet --profile=youtube \
 	--user-agent="Mozilla/5.0 (X11; Linux x86_64; rv:49.0) Gecko/20100101 Firefox/49.0" \
 	'--ytdl-format=bestvideo[height<=?480]+bestaudio/best' "$(xclip -o)" \ 
 	|| mpv "$(xclip -o)" || notify-send 'ha fallado la reproduccion'	
 
 alt + 3
-	notify-send "reproduccion de video a un maximo de 360px" \
-	-i /usr/share/icons/papirus-antix/48x48/apps/kubeplayer.png \ 
+	notify-send "▶️ reproduccion de video a un maximo de 360px" \
 	; mpv --really-quiet --profile=youtube \
 	--user-agent="Mozilla/5.0 (X11; Linux x86_64; rv:49.0) Gecko/20100101 Firefox/49.0" \
 	'--ytdl-format=bestvideo[height<=?360]+bestaudio/best' "$(xclip -o)" \ 
