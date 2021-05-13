@@ -3,7 +3,7 @@
 waldir=/usr/share/wallpaper/
 case $1 in
 	"aleatorio") xwallpaper --zoom "$(find $waldir \
-		-not -path "$waldir/*" -type f | shuf -n 1)" ;;
+		-maxdepth 1 -type f | shuf -n 1)" ;;
 		#&& pidof -q bspwm && bspc wm -r ;;
 	"fijo") xwallpaper --zoom "$(cat $HOME/.local/share/fondo.txt)" ;;
 esac

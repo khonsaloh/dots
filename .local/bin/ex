@@ -1,39 +1,38 @@
 #!/bin/sh
 
-esto="$1"
 esto2="$2"
-
+# better switch to mimetypes
 eso() {
-    case $esto in
-      *.tar.bz2)  tar xjf "$esto"    ;;
-      *.tar.gz) tar xzf "$esto"    ;;
-      *.bz2)    bunzip2 "$esto"    ;;
+    case $1 in
+      *.tar.bz2)  tar xjf "$1"    ;;
+      *.tar.gz) tar xzf "$1"    ;;
+      *.bz2)    bunzip2 "$1"    ;;
       #*.rar)    rar x $1    ;;
-      *.gz)   gunzip "$esto"   ;;
-      *.tar)    tar xf "$esto"   ;;
-      *.tbz2)   tar xjf "$esto"    ;;
-      *.tgz)    tar xzf "$esto"    ;;
-      *.zip)    unzip "$esto"    ;;
-      *.Z)    uncompress "$esto" ;;
-      *.lzma) unlzma "$esto" ;;
-      *.xz) unxz "$esto" ;;
+      *.gz)   gunzip "$1"   ;;
+      *.tar)    tar xf "$1"   ;;
+      *.tbz2)   tar xjf "$1"    ;;
+      *.tgz)    tar xzf "$1"    ;;
+      *.zip)    unzip "$1"    ;;
+      *.Z)    uncompress "$1" ;;
+      *.lzma) unlzma "$1" ;;
+      *.xz) unxz "$1" ;;
       -sfs) unsquashfs -f -d "$esto2" .;;
       *.sfs) unsquashfs -f -d "$esto2" .;;
       *.sqfs) unsquashfs -f -d "$esto2" .;;
-      *.rpm) tar xvf "$esto".rpm ;;
-      *.deb) dpkg -x "$esto" "$esto.ex";;
-      *.img) zcat "$esto" | cpio idmv ;;
+      *.rpm) tar xvf "$1".rpm ;;
+      *.deb) dpkg -x "$1" $(basename $1 .deb) ;;
+      *.img) zcat "$1" | cpio idmv ;;
       *.rar) printf "instala unrar (formato propietario)\\n";;
-      *)      echo "'$esto' no se puede extraer por este metodo" ;;
+      *)      echo "'$1' no se puede extraer por este metodo" ;;
     esac
 }
 
-[ -n "$1" ] && eso
+[ -n "$1" ] && eso "$1"
 
 ello() {
     case $a in
       *.tar.bz2)  tar xjf "$a"    ;;
-      *.tar.gz) tar xzf "$a"    ;;
+      *.tar.gz) tar xzf "$a" ;;
       *.bz2)    bunzip2 "$a"    ;;
       #*.rar)    rar x $1    ;;
       *.gz)   gunzip "$a"   ;;
@@ -48,12 +47,12 @@ ello() {
       *.sfs) unsquashfs -f -d "$a" .;;
       *.sqfs) unsquashfs -f -d "$a" .;;
       *.rpm) tar xvf "$a".rpm ;;
-      *.deb) dpkg -x "$a" "$a.ex";;
+      #*.deb) dpkg -x "$a" "$a.ex";;
+      *.deb) dpkg -x "$a" $(basename $a .deb) ;;
       *.img) zcat "$a" | cpio idmv ;;
       *.rar) printf "instala unrar (formato propietario)\\n";;
       *)      echo "'$a' no se puede extraer por este metodo" ;;
     esac
 }
 
-[ -z "$@" ] && a=$(find  . -type f | fzf --reverse --cycle) || exit 1 && ello
-
+[ -z "$@" ] && a=$(find  . -type f | fzf --reverse --cycle) || exit 1 && ello "$1"
