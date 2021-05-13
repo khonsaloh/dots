@@ -1,5 +1,5 @@
 #!/bin/sh
-bq=$(find . -type f -not -path "./.cache*" -not -path "./.mozilla*" -not -path "./.thumbnails*" 2>/dev/null | 
+bq=$(find . -maxdepth 4 -type f -not -path "./.cache*" -not -path "./.mozilla*" -not -path "./.thumbnails*" 2>/dev/null | 
 	fzf --reverse --preview '([[ -f {} ]] && (bat --line-range :40 {} --style=numbers --color=always {} || 
 	cat {})) || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | 
 	head -40' --color='hl:148,hl+:154,pointer:032,marker:010,bg+:237')
@@ -26,4 +26,3 @@ case $bq in
 	*.odt) libreoffice "$bq" &;; 
 	*) vim "$bq";; 
 esac
-

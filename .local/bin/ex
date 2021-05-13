@@ -4,8 +4,8 @@ esto2="$2"
 # better switch to mimetypes
 eso() {
     case $1 in
-      *.tar.bz2)  tar xjf "$1"    ;;
-      *.tar.gz) tar xzf "$1"    ;;
+      *.tar.bz2)  tar xjf "$1";;
+      *.tar.gz) tar xzf "$1" ;;
       *.bz2)    bunzip2 "$1"    ;;
       #*.rar)    rar x $1    ;;
       *.gz)   gunzip "$1"   ;;
@@ -55,4 +55,4 @@ ello() {
     esac
 }
 
-[ -z "$@" ] && a=$(find  . -type f | fzf --reverse --cycle) || exit 1 && ello "$1"
+[ -z "$@" ] && a=$(find  . -maxdepth 1 -type f | fzf --reverse --cycle) || exit 1 && ello "$1"

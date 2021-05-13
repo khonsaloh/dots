@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ -z "$1" ]; then
-	c=$(find . -type f | fzf --cycle --height 15 --prompt='elige archivo: ')  
+	c=$(find . -maxdepth 1 -type f | fzf --cycle --height 15 --prompt='elige archivo: ')  
 	[ -z "$c" ] && exit 1
 	printf '========================\n'
 	printf '| 4-permiso lectura    |\n'

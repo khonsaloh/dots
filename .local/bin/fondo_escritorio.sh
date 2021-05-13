@@ -19,14 +19,14 @@ EOF
 printf "opcion: " && read -r fondo
 
 case $fondo in
-	"1") xwallpaper --zoom "$(find $waldir -type f | fzf --cycle --reverse)" 2>/dev/null ;;
+	"1") xwallpaper --zoom "$(find $waldir -maxdepth 1 -type f | fzf --cycle --reverse)" 2>/dev/null ;;
 	"2")
 	while true; do
-		xwallpaper --zoom "$(find $waldir -type f | shuf -n 1)"
+		xwallpaper --zoom "$(find $waldir -maxdepth 1 -type f | shuf -n 1)"
 		sleep 60
 	done &
 	;;
-	"3") a=$(find $waldir -type f | fzf --cycle --reverse |
+	"3") a=$(find $waldir -maxdepth 1 -type f | fzf --cycle --reverse |
 		tee $HOME/.local/share/fondo.txt 1>/dev/null) && [ -n "$a" ] && pidof -q bspwm && bspc wm -r || exit;;
 esac
 
