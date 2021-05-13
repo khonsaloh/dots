@@ -1,45 +1,70 @@
 #!/bin/sh
 
-token=$(cat $XDG_CONFIG_HOME/apis/nasa)
+dep_ck () {
+for dep in "$@"; do
+	command -v "$dep" 1>/dev/null \
+		|| { printf "%s non encontrado. debes instalalo.\\n" "$dep" ; exit 2; }
+done
+}
+dep_ck "jq" "wget" "curl"
+
+app=wget
+appopt='-q --show-progress'
+
+token="$(cat "$XDG_CONFIG_HOME"/apis/nasa)"
 [ -z "$token" ] && token=DEMO_KEY
 downdir=/tmp/nasa
-app=wget
 #app=curl
+landrover="https://api.nasa.gov/mars-photos/api/v1/rovers"
+fotos="jq ".photos[].img_src""
+
+axuda () {
+cat << EOF
+-c para obtener imágenes de la curiosity
+-o de la opportunity
+-s de la spirit
+-cam ver camaras disponibles
+-d para obtener la imagen del dia
+EOF
+}
 
 while [ -n "$1" ]; do
         case "$1" in
-        -h|--help) printf '%s' "-c para obtener imágenes de la curiosity, -o de la opportunity, -s de la spirit" ;;
+        -h|--help) axuda && exit;;
         -c)
-                #param="$2"
-                printf '%s' "pon fecha con formato americano (año-mes-día): " && read -r fecha
-                a=$(curl -4 -sf "https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?earth_date=$fecha&api_key=$token" | jq ".photos[].img_src")
-                printf '%s' "$a" | while read -r line
-                do
-                        wget "$(printf '%s\n' "$line" | tr -d '"')" -P $downdir
-                done
-                shift
+printf '%s' "pon fecha con formato "
+printf "americano (año-mes-día): " && read -r fecha
+a=$(curl -4 -sf "$landrover/curiosity/photos?earth_date=$fecha&api_key=$token" | $fotos)
+printf '%s' "$a" | while read -r line
+do
+	wget $appopt "$(printf '%s\n' "$line" | tr -d '"')" -P $downdir
+done
+shift
                 ;;
         -o)
-                a=$(curl -sf "https://api.nasa.gov/mars-photos/api/v1/rovers/opportunity/photos?sol=1000&api_key=$token" | jq ".photos[].img_src")
+                a=$(curl -sf "$landrover/opportunity/photos?sol=1000&api_key=$token" | $fotos)
                 printf '%s' "$a" | while read -r line
                 do
-                        wget "$(printf '%s\n' "$line" | tr -d '"')" -P $downdir
+                        wget $appopt "$(printf '%s\n' "$line" | tr -d '"')" -P $downdir
                 done
                 shift
                 ;;
          -s)
-                a=$(curl -sf "https://api.nasa.gov/mars-photos/api/v1/rovers/spirit/photos?sol=1000&api_key=$token" | jq ".photos[].img_src")
+                a=$(curl -sf "$landrover/spirit/photos?sol=1000&api_key=$token" | $fotos)
                 printf '%s' "$a" | while read -r line
                 do
-                        wget "$(printf '%s\n' "$line" | tr -d '"')" -P $downdir
+                        wget $appopt "$(printf '%s\n' "$line" | tr -d '"')" -P $downdir
                 done
                 shift
                 ;;
-        *) printf '%s' "-c para obtener imágenes de la curiosity, -o de la opportunity, -s de la spirit" ;;
+	-cam) curl -4 -sf "$landrover/curiosity/photos?earth_date=2020-12-12&api_key=$token" \
+		| jq ".photos[].camera.name" | uniq;;
+	-d) wget $appopt "$(curl -4 -sf "https://api.nasa.gov/planetary/apod?api_key=$token" |jq ".url"| tr -d '"')";;
+        *) axuda && exit;;
         esac
         shift
 done
 
+[ -z "$1" ] && axuda
 # obtener imagen del dia de nuestro vecindario cósmico
-# put your api key instead of DEMO_KEY, this works as illustration (pon tu clave de api)
-wget "$(curl -4 -sf "https://api.nasa.gov/planetary/apod?api_key=$token" |jq ".url"| tr -d '"')"
+#wget $appopt "$(curl -4 -sf "https://api.nasa.gov/planetary/apod?api_key=$token" |jq ".url"| tr -d '"')"

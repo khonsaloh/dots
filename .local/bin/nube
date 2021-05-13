@@ -1,0 +1,32 @@
+#!/bin/sh
+
+#men='dmenu -l 20 -p \\'elige disco remoto: '\\'
+remoto="$(rclone listremotes | dmenu -l 30 -p 'elige disco remoto: ')"
+op=$(cat << EOF | dmenu -l 20 -p 'elige opcion: '
+eliminar archivos/carpetas
+subir archivos
+listar archivos en remoto
+descargar archivo/carpeta
+ver quota
+crear directorio remoto
+montar disco remoto localmente
+EOF
+)
+
+case $op in
+	"eliminar archivos/carpetas") file="$(rclone tree $remoto | dmenu -l 20 -p 'elige archivo' | rev | cut -d' ' -f1|rev)" \
+		&& for i in "$file"; do
+			rclone purge $remoto/$i || rclone delete $remoto/$i 
+		done ;;
+	"subir archivos") for i in $(ls |fzf -m); do
+		rclone copy $i $remoto
+	done;;
+	"listar archivos en remoto") rclone tree $remoto ;;
+	"crear directorio remoto") printf "nombre de dir: " && read -r dir && rclone mkdir $remoto$dir ;;
+	"sincronizar archivos") rclone tree $remoto ;;
+	"ver quota") rclone about $remoto ;;
+	"montar disco remoto localmente") rclone about $remoto ;;
+	"descargar archivo/carpeta") for i in $(rclone tree $remoto | dmenu -l 20); do
+		rclone copy $remoto$i /tmp
+	done	;;
+esac
