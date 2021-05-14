@@ -11,4 +11,3 @@ case $a in
 	*.mp3|*.opus|*.ogg|*.flac|*.webm|*.wav) /usr/bin/mpv "$a";;
 	*) tragar mpv "$a";;
 esac
-

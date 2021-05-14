@@ -5,6 +5,7 @@ ison="$(sudo blkid | grep 'sr[0-9]')"
 [ $(echo "$ison" | wc -l) -gt 1 ] \
 	&& dvd=$(echo "$ison" | dmenu -l 20 -p 'elige dvd a reproduccir: ' | cut -d ' ' -f1 | tr -d ':') \
 	&& [ -z "$dvd" ] && exit
+[ $(echo "$ison" | wc -l) -eq 1 ] && dvd=$(echo $ison | cut -d ' ' -f1 | tr -d ':') 
 notify-send "📀 reproduciendo dvd";
 a=$(xdo id) && xdo hide $a \
-	&& mpv --really-quiet dvd://0 --dvd-device=$dvd --alang=es && xdo show $a 
+	&& mpv --really-quiet dvd://0 --dvd-device=$dvd --alang=es,en && xdo show $a 
