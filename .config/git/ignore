@@ -13,3 +13,4 @@ apis/
 *.exe
 *.apk
 .uuid
+*.pyc

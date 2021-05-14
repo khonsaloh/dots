@@ -69,7 +69,7 @@ case $a in
 	"--> limpiar historial de imagenes repo git") git branch bridge $(echo "cleaning" | git commit-tree HEAD^{tree}) \
 		&& git checkout bridge && git branch -D master && git branch -m master \
 		&& [ "$(printf "s\\nN" | dmenu -i -p "empujar a remoto(s)? ")" = "s" ] \
-		&& git remote | xargs -L1 git push --force --all ;;
+		&& git remote | xargs -L1 git push --force --all && git gc --aggressive --prune;;
 	"--> (dotfiles) limpiar historial de imagenes") [ -d $gitdots ] && git --git-dir=$gitdots \
 		--work-tree=$HOME branch bridge $(echo "cleaning dots hist" | git --git-dir=$gitdots --work-tree=$HOME commit-tree HEAD^{tree}) \
 		&& git --git-dir=$gitdots --work-tree=$HOME checkout bridge \
@@ -79,5 +79,4 @@ case $a in
 		&& git --git-dir=$gitdots --work-tree=$HOME remote | xargs -L1 git --git-dir=$gitdots --work-tree=$HOME push --force --all ;;
 		"renombrar rama (local)") old="$(git branch | fzf --prompt='rama a renombrar: ' )" && \
 			printf "nombre nuevo: " && read -r new && git branch -m "$old" "$new";;
-
 esac
