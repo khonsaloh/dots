@@ -29,24 +29,31 @@ descargar metadatos (json)
 descargar audio solo
 EOF
 )
-
 case $vid in
 	ver*) youtube-dl -F "$url";;
 	"descargar miniatura") youtube-dl --write-thumbnail --skip-download "$url";;
-	"descargar video") formato=$(youtube-dl -F "$url"| tail -n +4 \
+	"descargar video") formato="$(youtube-dl -F "$url"| tail -n +4 \
 		|fzf --tac -m --prompt="tab para seleccionar, pon codigo (primero del video, luego audio): " \
-		|cut -d' ' -f1 | paste -d' ' - - | tr ' ' '+') \
-		&& youtube-dl -4 -f $formato $url\
-		&& notify-send "video descargado en $dir";;
+		|cut -d' ' -f1)" && [ -z "$formato" ] && exit || [ $(echo $formato | wc -w) -eq 1 ] \
+		&& youtube-dl -4 -f $formato $url && exit || formato=$(printf "$formato" | paste -d' ' - - | tr ' ' '+') \
+		&& youtube-dl -4 -f $formato $url && notify-send "video descargado en $dir" && exit;;
 	"descargar por defecto (720 o 360)") youtube-dl "$url";;
 	" ") youtube-dl -g "$url" | awk '{ if(NR==1) print $0 }' | sed "s/^/'/;s/$/'/" |xargs -I {} ffmpeg -i "{}" \
 		-c:v copy -ss 0 -t 10 pruebar.mp4;;
-	"descargar parte de video") youtube-dl -F "$url" && printf "elige resolucion: " \
-		&& read -r resol && printf "desde donde quieres cortar (inicio)? " \
-		&& read -r inicio && printf "hasta donde quieres cortar? " \
-		&& read -r fin && youtube-dl -f "$resol" -g "$url"| 
-		awk '{ if(NR==1) print $0 }' | sed "s/^/'/;s/$/'/" | xargs -I {} ffmpeg -hide_banner -i "{}" \
-		-c:v libx264 -ss $inicio -to $fin /tmp/$tiempo.mkv;;
+		"descargar parte de video") formato=$(youtube-dl -F "$url" | tail -n +4 |fzf --tac -m --prompt="elige formatos: " | cut -d' ' -f1) \
+		&& [ -n "$formato" ] && num=$(echo $formato | wc -w)
+		case $num in
+			1) printf "desde donde quieres cortar (inicio)? " \
+				&& read -r inicio && printf "hasta donde quieres cortar? " \
+				&& read -r fin && youtube-dl -f "$formato" -g "$url"| 
+				awk '{ if(NR==1) print $0 }' | sed "s/^/'/;s/$/'/" | xargs -I {} ffmpeg -hide_banner -i "{}" \
+				-c:v libx264 -ss $inicio -to $fin /tmp/$tiempo.mkv;;
+			*) formato=$(printf "$formato" | paste -d' ' - - | tr ' ' '+') && printf "desde donde quieres cortar (inicio)? " \
+				&& read -r inicio && printf "hasta donde quieres cortar? " \
+				&& read -r fin && youtube-dl -f "$formato" -g "$url"| 
+				awk '{ if(NR==1) print $0 }' | sed "s/^/'/;s/$/'/" | xargs -I {} ffmpeg -hide_banner -i "{}" \
+				-c:v libx264 -ss $inicio -to $fin /tmp/$tiempo.mkv;;
+		esac;;
 	"descargar parte de audio") printf "comienzo: " && read -r com && printf "fin: " && read -r fin \
 		&& youtube-dl -g "$url" |awk '{ if(NR==2) print $0 }' | sed "s/^/'/;s/$/'/" | xargs -I {} ffmpeg \
 		-hide_banner -i "{}" -ss "$com" -to "$fin" $dir$tiempo.mp3;;
@@ -61,4 +68,3 @@ echo
 #ffplay -i "url"
 #add quotes between
 #sed 's/^/"/;s/$/"/'
-

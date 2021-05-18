@@ -8,12 +8,12 @@ if [ -f "$1" ]; then
 	esac
 else
 	#a=$(pwd)
-	b="$(file --mime-type * | grep 'application/pgp' | fzf)" \
-		&& name=$(echo "$b" | cut -d' ' -f1 | tr -d ':') \
-		&& tipo=$(echo "$b" | rev | cut -d' ' -f1|rev)
+	a="$(file --mime-type * | grep 'application/pgp')" \
+		&& b="$(printf "$a" | fzf)" && [ -n "$b" ] \
+		&& name=$(echo "$b" |cut -d' ' -f1 |tr -d ':') \
+		&& tipo=$(echo "$b" |rev | cut -d' ' -f1|rev)
 	[ -z "$b" ] && exit
 		case $tipo in
 	  		application/pg*) gpg -d "$name";;
-	  		*) gpg -ca "$a/$b";;
 		esac
 fi

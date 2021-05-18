@@ -2,7 +2,8 @@
 
 case $BLOCK_BUTTON in
 	1) setsid -f st -e alsamixer;;
-	3) $HOME/scripts/cmusa;;
+	#3) $HOME/scripts/cmusa;;
+	3) if tmux has; then st -e tmux attach; else st -e tmux new-session cmus; fi;;
 esac
 
 vol=$(amixer sget Master | awk '/%/ {print $4}' | tr -d '[%]')
