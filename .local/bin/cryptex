@@ -3,8 +3,9 @@
 if [ -f "$1" ]; then
 	tipo="$(file -b --mime-type "$1" | rev| cut -d' ' -f1 | rev)"
 	case $tipo in
-		application/pg*) gpg -d "$1";;
-		*) gpg -ca "$1";;
+		application/pg*) gpg -d "$@" ;; #|| gpg ;;
+		*) [ "$(printf "s\nn"| dmenu -p 'encriptar simetricamente? ')"  = 's' ] \
+			&& gpg -ca "$1";; #encriptacion simetrica
 	esac
 fi
 [ -n "$1" ] && exit
@@ -22,11 +23,12 @@ encriptar para otro usuario
 servidores de claves
 firmar digitalmente
 exportar clave privada
-(10) editar clave
+editar clave
 listar claves privadas
 verificar firma digital
 (14) detectar archivos encriptados
 encriptar en una imagen
+encriptar simetricamente
 EOF
 )
 
@@ -44,9 +46,18 @@ case $clave in
 		&&  a=$(gpg -k | awk '/pub/{getline; print}' | tail -n +2 | fzf --cycle --height=15) \
 		&& printf "archivo a cifrar: " && b=$(find . -maxdepth 1 | fzf --cycle --height=15) \
 		&& gpg -v -a -o mensaje.cifrado --encrypt --recipient "$a" "$b";; 
-	"servidores de claves") a=$(printf "enviar clave publica a servidor de claves\\nbuscar clave publica en servidor de claves\\ndescargar clave publica de servidor de claves\\n"|
-		fzf --cycle --height=10);;
-	"firmar digitalmente") printf "%s$verde archivo a firmar: " && a=$(find . -maxdepth 1 | fzf --cycle --height=15) && gpg --clearsign "$a";;
+	"servidores de claves") keyserver="pgp.mit.edu" && a=$(printf "subir clave publica a servidor de claves\\nbuscar clave publica en servidor de claves\\ndescargar clave publica de servidor de claves\\n"|
+		fzf --cycle --height=10)
+			case $a in
+				"subir clave publica a servidor de claves") echo $keyserver && gpg -k && gpg --send-keys --keyserver "$keyserver" \
+					"$(gpg -k | awk '/pub/{getline; print}' | tail -n +2 | fzf --cycle --height=15)";;
+				"buscar clave publica en servidor de claves") a="$(gpg -k | awk '/pub/{getline; print}' | tail -n +2 | fzf --cycle --height=15)" \
+					&& gpg --keyserver "$keyserver" --search-keys $a 
+				       	;;
+				"descargar clave publica de servidor de claves") gpg --keyserver $keyserver --recv-keys id
+					;;
+			esac;;
+	"firmar digitalmente") a=$(find . -maxdepth 1 | fzf --cycle --height=15 --prompt='elige archivo a firmar: ') && gpg --clearsign "$a";;
 	"exportar clave privada") gpg --list-keys && a=$(gpg -k | awk '/pub/{getline; print}' | tail -n +2 | fzf --cycle --height=15) \
 		&& gpg -ao nueva.priv --export-secret-keys "$a";;
 	"11") gpg --list-keys && printf "usuario local" && a=$(gpg -k | awk '/pub/{getline; print}' | tail -n +2 | fzf --cycle --height=15) \
@@ -61,15 +72,12 @@ case $clave in
 		&& tipo=$(echo "$b" |rev | cut -d' ' -f1|rev) \
 		&& [ -z "$b" ] && exit
 		case $tipo in
-			application/pg*) gpg -d "$name" ;;
+			application/pg*) gpg -d "$name" || echo hola && gpg --symmetric --decrypt "$name" ;;
 		esac
 		;;
+	"editar clave") gpg --edit-key $(gpg -k | awk '/pub/{getline; print}' | tail -n +2 | fzf --cycle --height=15);;
+	"encriptar simetricamente") gpg -ca $(find . -maxdepth 1);;
 esac
-
-#encriptar para destinatario
-#a=$(gpg -k | awk '/pub/{getline; print}' | sed '1d' | fzf --cycle --height=15)
-#gpg -v -a -o mensaje.cifrado --encrypt --recipient $a archivo_a_cifrar 
-#gpg --fingerprint
 
 #encriptar asimetrica para usuario destinatario
 #gpg --encrypt -a -r gonzalo@gmail.com hola
@@ -80,16 +88,5 @@ esac
 #printf "usuario destinatario"
 #b=$(gpg -k | awk '/pub/{getline; print}' | sed '1d' | fzf --cycle --height=15)
 #gpg -u $a --sign -o nuevo_archivo --encrypt -r $b archivo_a_firmar
-
-#firmar
-#gpg --clearsign archivo_a_firmar
-
-#a=$(gpg -k | awk '/pub/{getline; print}' | sed '1d' | fzf --cycle --height=15)
-#gpg --send-keys --keyserver pgp.rediris.es $a
-
-#a=$(gpg -k | awk '/pub/{getline; print}' | sed '1d' | fzf --cycle --height=15)
-#gpg --key-server pgp.rediris.es --search-keys $a 
-
-#gpg --keyserver pgp.rediris.es --recv-keys id
  
 #gpg --list-secret-keys --keyid-format LONG
