@@ -2,7 +2,7 @@
 
 #comprobar actualizaciones
 
-[ -z "$1" ] && opcion="$(cat << EOF | fzf
+[ -z "$1" ] && opcion="$(fzf << EOF
 instalar paquete deb
 ver repositorios
 construir paquete debian

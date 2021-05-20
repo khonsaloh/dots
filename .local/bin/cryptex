@@ -11,7 +11,7 @@ fi
 [ -n "$1" ] && exit
 
 verde='\033[0;32m'
-clave=$(cat << EOF | fzf --prompt='gestor criptográfico: '
+clave=$(fzf --prompt='gestor criptográfico: ' << EOF
 generar nuevo par de llaves
 importar clave
 eliminar par de llaves privada-publica

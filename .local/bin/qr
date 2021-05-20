@@ -2,7 +2,7 @@
 
 #transferencia de contraseña wlan rapida generando codigo qr
 tiempo="$(date +%Y%m%d%H%M%S)"
-a=$(cat << EOF | dmenu -l 20 -p 'codigo qr: '
+a=$(dmenu -l 20 -p 'codigo qr: ' << EOF
 codificar cadena de texto a qr
 codificar contraseña wifi
 escanear codigo qr con webcam

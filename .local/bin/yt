@@ -14,9 +14,9 @@ tiempo=$(date +%Y%m%d%H%M%S)
 
 [ ! -f $dir ] && mkdir -p $dir
 
-select=fzf
+#select=fzf
 
-vid=$(cat << EOF | fzf --prompt='elige opcion: '
+vid=$(fzf --prompt='elige opcion: ' << EOF
 ver formatos en servidor
 descargar miniatura
 descargar video
@@ -37,7 +37,7 @@ case $vid in
 	"descargar video") formato="$(youtube-dl -F "$url"| tail -n +4 \
 		|fzf --tac -m --prompt="tab para seleccionar, pon codigo (primero del video, luego audio): " \
 		|cut -d' ' -f1)" && [ -z "$formato" ] && exit || [ $(echo $formato | wc -w) -eq 1 ] \
-		&& youtube-dl -4 -f $formato $url && exit || formato=$(printf "$formato" | paste -d' ' - - | tr ' ' '+') \
+		&& youtube-dl -4 -f $formato $url && exit || formato=$(printf "%s" "$formato" | paste -d' ' - - | tr ' ' '+') \
 		&& youtube-dl -4 -f $formato $url && notify-send "video descargado en $dir" && exit;;
 	"descargar por defecto mejor resolucion") youtube-dl "$url";;
 	" ") youtube-dl -g "$url" | awk '{ if(NR==1) print $0 }' | sed "s/^/'/;s/$/'/" |xargs -I {} ffmpeg -i "{}" \
@@ -50,7 +50,7 @@ case $vid in
 				&& read -r fin && youtube-dl -f "$formato" -g "$url"| 
 				awk '{ if(NR==1) print $0 }' | sed "s/^/'/;s/$/'/" | xargs -I {} ffmpeg -hide_banner -i "{}" \
 				-c:v libx264 -ss $inicio -to $fin /tmp/$tiempo.mkv;;
-			*) formato=$(printf "$formato" | paste -d' ' - - | tr ' ' '+') && printf "desde donde quieres cortar (inicio)? " \
+			*) formato=$(printf "%s" "$formato" | paste -d' ' - - | tr ' ' '+') && printf "desde donde quieres cortar (inicio)? " \
 				&& read -r inicio && printf "hasta donde quieres cortar? " \
 				&& read -r fin && youtube-dl -f "$formato" -g "$url" | xargs -I {} ffmpeg -hide_banner -i "{}" \
 				-c:v libx264 -ss $inicio -to $fin /tmp/$tiempo.mkv;; # no funciona como es debido

@@ -2,7 +2,7 @@
 
 #men='dmenu -l 20 -p \\'elige disco remoto: '\\'
 remoto="$(rclone listremotes | dmenu -i -l 30 -p 'elige disco remoto: ')"
-op=$(cat << EOF | dmenu -l 20 -p 'elige opcion: '
+op=$(dmenu -l 20 -p 'elige opcion: ' << EOF
 eliminar archivos/carpetas
 subir archivos
 listar archivos en remoto

@@ -1,9 +1,9 @@
 #!/bin/sh
 
-rssfile=$HOME/.local/share/ytrss.txt 
+rssfile="$HOME"/.local/share/ytrss.txt 
 [ -n "$1" ] && case $1 in
-	-a|-e) $EDITOR $rssfile ;;
-	-d|-r) a="$(cat $rssfile | fzf --reverse --cycle --prompt='eliminar entrada:' )" \
+	-a|-e) "$EDITOR" "$rssfile" ;;
+	-d|-r) a="$(fzf --reverse --cycle --prompt='eliminar entrada:' < $rssfile)" \
 				&& sed -i "/$a/d" $rssfile;;
 esac
 

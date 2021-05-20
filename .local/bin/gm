@@ -3,7 +3,7 @@
 gitdots="$HOME/.local/share/dotfiles"
 
 case $1 in
-	-e) $EDITOR $(readlink -f "$0") && exit;;
+	-e) "$EDITOR" "$(readlink -f "$0")" && exit;;
 esac
 a=$( fzf --reverse --cycle --prompt='===gestor de git=== ' << EOF 
 autoempujar
@@ -42,7 +42,7 @@ case $a in
 	"volver a una imagen anterior") git log --graph && git reset --hard "$(git log |
 		grep commit | awk '{print $2}' | fzf --cycle --height 30)" ;;
 	"añadir imagen") printf "nombre de la nueva imagen: " && read -r ima && git add . && git commit -m "$ima" \
-		&& [ -n $(git remote) ] && [ "$(printf "s\\nN" | dmenu -i -p "empujar a remoto(s)? ")" = "s" ] \
+		&& [ -n "$(git remote)" ] && [ "$(printf "s\\nN" | dmenu -i -p "empujar a remoto(s)? ")" = "s" ] \
 		&& git remote | xargs -L1 git push --all ;;
 	"ver imagenes") git log --graph;;
 	"ver imagen concreta") git show "$(git log | grep commit | awk '{print $2}' | fzf --cycle --height 20 )";; 
