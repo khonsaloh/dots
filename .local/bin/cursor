@@ -3,7 +3,15 @@
 b=$(printf "cursor-raton\\ncursor-escribir\\n" | fzf --cycle --reverse)
 [ -z "$b" ] && exit 1
 case $b in
-	"cursor-escribir") a=$(printf "bloque parpadeante\\nbloque estatico\\nraya parpadeante\\nraya estatica\\nbarra fina parpadeante\\nbarra fina estatica\\n" | fzf --cycle --reverse)
+	"cursor-escribir") a=$( fzf --cycle --reverse <<- EOF
+		bloque parpadeante
+		bloque estatico
+		raya parpadeante
+		raya estatica
+		barra fina parpadeante
+		barra fina estatica
+		EOF
+		)	
 	case $a in
 		"bloque parpadeante") echo -e -n "\x1b[\x30 q";; # changes to blinking block
 		"") echo -e -n "\x1b[\x31 q";; # changes to blinking block also
@@ -13,7 +21,14 @@ case $b in
 		"barra fina parpadeante") echo -e -n "\x1b[\x35 q";; # changes to blinking bar
 		"barra fina estatica") echo -e -n "\x1b[\x36 q";; # changes to steady bar
 	esac ;;
-	"cursor-raton") a=$(printf "flecha-izquierda\\nflecha-centro\\nflecha-derecha\\ncross\\nplus\\n" | dmenu -l 10 -p pointer )
+	"cursor-raton") a=$(dmenu -l 10 -p pointer <<- EOF
+		flecha-izquierda
+		flecha-centro
+		flecha-derecha
+		cross
+		plus
+		EOF
+		)
 	case $a in
 		"flecha-izquierda") xsetroot -cursor_name left_ptr;;
 		"flecha-centro") xsetroot -cursor_name center_ptr;;

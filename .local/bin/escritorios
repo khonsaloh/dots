@@ -2,17 +2,19 @@
 #script para cambiarse de escritorios sin cerrar sesion
 file=~/.local/share/desktop
 
-a=$(cat << EOF | dmenu -l 30 -p 'elige escritorio: '
+a=$(dmenu -l 30 -p 'elige escritorio: ' << EOF
 dwm
 dwm-look
 dwm-prev
 dwm-prueba
 bspwm
+jwm
 EOF
 )
 [ -z "$a" ] && exit
 pidof -q bspwm && desk=bspwm
 pidof -q dwm && desk=dwm
+pidof -q jwm && desk=jwm
 
 [ $desk = "bspwm" ] && killall -q sxhkd && killall -q polybar && killall -q tail && killall -q xob
 case $a in
@@ -21,4 +23,5 @@ case $a in
 	dwm-prueba) echo ~/scripts/dwm-6.2-prueba/dwm > $file && pkill $desk;;
 	dwm-look) echo ~/descargas/build/dwm-master/dwm > $file && pkill $desk;;
 	bspwm) echo bspwm > $file && pkill $desk;;
+	jwm) echo jwm > $file && pkill $desk;;
 esac

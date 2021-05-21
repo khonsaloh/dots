@@ -11,7 +11,7 @@ fi
 [ -n "$1" ] && exit
 
 verde='\033[0;32m'
-clave=$(fzf --prompt='gestor criptográfico: ' << EOF
+clave=$(fzf --prompt='gestor criptográfico: ' << GON
 generar nuevo par de llaves
 importar clave
 eliminar par de llaves privada-publica
@@ -32,7 +32,7 @@ encriptar simetricamente
 encriptar firmando digitalmente (asimetricamente)
 extraer archivo/mensaje de una imagen
 eliminar archivo de forma segura
-EOF
+GON
 )
 
 case $clave in
@@ -57,7 +57,7 @@ case $clave in
 		&&  a=$(gpg -k | awk '/pub/{getline; print}' | tail -n +2 | fzf --cycle --height=15) \
 		&& printf "archivo a cifrar: " && b=$(find . -maxdepth 1 | fzf --cycle --height=15) \
 		&& gpg -v -a -o mensaje.cifrado --encrypt --recipient "$a" "$b";; 
-	"servidores de claves") keyserver="pgp.mit.edu" 
+	"servidores de claves") keyserver="pgp.rediris.es" 
 		a=$(printf "subir clave publica a servidor de claves\\nbuscar clave publica en servidor de claves\\ndescargar clave publica de servidor de claves\\n"|
 		fzf --cycle --height=10)
 			case $a in

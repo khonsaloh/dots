@@ -1,0 +1,23 @@
+#!/bin/sh
+
+opcion=$(fzf << GON
+ver reglas del cortafuegos
+bloquear entradas ping en la red
+limpiar reglas de la tabla arp
+limpiar reglas de la tabla ip
+GON
+)
+
+broad=$(sudo ifconfig "$(/usr/bin/ls /sys/class/net | grep '^wl')" |
+	        grep broadcast|rev | cut -d' ' -f1 | rev | cut -d'.' -f1,2,3)
+
+case $opcion in
+	#*) sudo arptables --flush && exit;; ## limpiar todo
+	"limpiar reglas de tabla arp") sudo arptables --flush && exit;; ## limpiar todo
+	"lipiar relas de la tabla arp") sudo arptables --flush && exit;; ## limpiar todo
+	"limpiar relas de la tabla ip") sudo iptables --flush && exit;; ## limpiar todo
+	"ver reglas del cortafuegos") sudo iptables -nL --line-numbers ;;
+	"bloquear entradas ping en la red") for ip in $(seq 2 255); do
+		sudo arptables -A INPUT -s "$broad"."$ip" -j DROP
+	done ;; # bloquear direccion (peticiones ping)
+esac

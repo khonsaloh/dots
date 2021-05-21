@@ -16,7 +16,7 @@ tiempo=$(date +%Y%m%d%H%M%S)
 
 #select=fzf
 
-vid=$(fzf --prompt='elige opcion: ' << EOF
+vid=$(fzf --prompt='gestor de descarga: ' << EOF
 ver formatos en servidor
 descargar miniatura
 descargar video

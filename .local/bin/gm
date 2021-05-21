@@ -37,7 +37,7 @@ EOF
 case $a in
 
 	"listar remotos") git remote ;;#git config --list;;
-	"clonar repo (ultima imagen)") git clone --depth 0 "$1";;
+	"clonar repo (ultima imagen)") git clone --depth 1 "$1";;
 	"ver estado") git status;;
 	"volver a una imagen anterior") git log --graph && git reset --hard "$(git log |
 		grep commit | awk '{print $2}' | fzf --cycle --height 30)" ;;
