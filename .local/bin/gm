@@ -21,7 +21,6 @@ cambiarse de rama
 eliminar rama local
 eliminar rama remota
 ver estado
-ver repositorios remotos
 clonar repo (ultima imagen)
 ver configuracion global
 actualizar software del proyecto (pull)
@@ -31,45 +30,51 @@ clonar repo con submódulos
 --> limpiar historial de imagenes repo git
 --> (dotfiles) limpiar historial de imagenes
 renombrar rama (local)
+cambiar alias a remoto
 EOF
 )
 [ -z "$a" ] && exit
 case $a in
 
-	"listar remotos") git remote ;;#git config --list;;
-	"clonar repo (ultima imagen)") git clone --depth 1 "$1";;
+	"listar remotos") git remote -v;;#git config --list;;
+	"clonar repo (ultima imagen)") printf "pon url del repo a clonar: " \
+		&& read -r repo && git clone --depth 1 "$repo";;
 	"ver estado") git status;;
 	"volver a una imagen anterior") git log --graph && git reset --hard "$(git log |
 		grep commit | awk '{print $2}' | fzf --cycle --height 30)" ;;
-	"añadir imagen") printf "nombre de la nueva imagen: " && read -r ima && git add . && git commit -m "$ima" \
+	"añadir imagen") printf "nombre de la nueva imagen: " \
+		&& read -r ima && git add . && git commit -m "$ima" \
 		&& [ -n "$(git remote)" ] && [ "$(printf "s\\nN" | dmenu -i -p "empujar a remoto(s)? ")" = "s" ] \
 		&& git remote | xargs -L1 git push --all ;;
 	"ver imagenes") git log --graph;;
 	"ver imagen concreta") git show "$(git log | grep commit | awk '{print $2}' | fzf --cycle --height 20 )";; 
 	"ver imagen de archivo") c=$(ls -a . | fzf --cycle --height 20 ) && git log $archivo;;
-	"ver repositorios remotos") git remote -v;;
 	"ver ramas") git branch ;;
 	"eliminar rama local") git branch -D $(git branch | fzf);;
 	"eliminar ramas remotas") git branch -d $(git branch -a | fzf);;
 	"cambiarse de rama") git checkout "$(git branch | fzf --cycle --height 10)" && git branch;;
-	"crear rama") echo "nombre de la nueva rama " && read -r rama && git branch "$rama";;
-	"añadir remoto") printf "nombre de repo remoto:\\n " && read -r remo && git remote add origin $remo;; 
+	"crear rama") echo -n "nombre de la nueva rama: " && read -r rama && git branch "$rama";;
+	"añadir remoto") printf "nombre de repo remoto: " \
+		&& read -r remo && git remote add origin $remo;; 
 	"empujar a remoto") git push "$(git remote)" master;;
 	"eleminar remoto") a=$(git remote -v | awk '{print $2}' |fzf --height 10) \
 		&& printf "nombre remoto: " && read -r remoto && git remote rm $remoto;; 
 	"ver configuracion global") git config --list;;
 	"autoempujar") git add . \
 		&& git commit -m "$(date +%Y%m%d%H%M%S)" && git remote | xargs -L1 git push --all ;;
-	"actualizar software del proyecto") git rebase ;;
+	"actualizar software del proyecto (pull)")
+		rama=$(git branch | cut -c 3-) && git pull "$(git remote)" "$rama"  ;;
 	"añadir submodulo") printf "pon repositorio a añadir como derivado o hijo: " && read -r derivado && git submodule add "$derivado" ;;
 	"clonar repo con submódulos") printf "pon repo a clonar: " && read -r clonar && git clone --recursive "$clonar";;
 	"(dotfiles) iniciar repo bare") git init --bare ;;
-	"(dotfiles) autoempujar") [ -d $gitdots ] && git --git-dir=$gitdots --work-tree=$HOME commit -m "$(date +%Y%m%d%H%M%S)" \
+	"(dotfiles) autoempujar") [ -d $gitdots ] \
+		&& git --git-dir=$gitdots --work-tree=$HOME commit -m "$(date +%Y%m%d%H%M%S)" \
 		&& git --git-dir=$gitdots --work-tree=$HOME remote | xargs -L1 git --git-dir=$gitdots --work-tree=$HOME push --all ;;
-	"--> limpiar historial de imagenes repo git") git branch bridge $(echo "cleaning" | git commit-tree HEAD^{tree}) \
-		&& git checkout bridge && git branch -D master && git branch -m master \
-		&& [ "$(printf "s\\nN" | dmenu -i -p "empujar a remoto(s)? ")" = "s" ] \
-		&& git remote | xargs -L1 git push --force --all && git gc --aggressive --prune;;
+	"--> limpiar historial de imagenes repo git")
+		git branch bridge $(echo "cleaning" | git commit-tree HEAD^{tree}) \
+			&& git checkout bridge && git branch -D master && git branch -m master \
+			&& [ "$(printf "s\\nN" | dmenu -i -p "empujar a remoto(s)? ")" = "s" ] \
+			&& git remote | xargs -L1 git push --force --all && git gc --aggressive --prune;;
 	"--> (dotfiles) limpiar historial de imagenes") [ -d $gitdots ] && git --git-dir=$gitdots \
 		--work-tree=$HOME branch bridge $(echo "cleaning dots hist" | git --git-dir=$gitdots --work-tree=$HOME commit-tree HEAD^{tree}) \
 		&& git --git-dir=$gitdots --work-tree=$HOME checkout bridge \
@@ -79,4 +84,5 @@ case $a in
 		&& git --git-dir=$gitdots --work-tree=$HOME remote | xargs -L1 git --git-dir=$gitdots --work-tree=$HOME push --force --all ;;
 		"renombrar rama (local)") old="$(git branch | fzf --prompt='rama a renombrar: ' )" && \
 			printf "nombre nuevo: " && read -r new && git branch -m "$old" "$new";;
+	"cambiar alias a remoto") git init --bare ;;
 esac

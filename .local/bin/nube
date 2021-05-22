@@ -14,20 +14,23 @@ EOF
 )
 
 case $op in
-	"eliminar archivos/carpetas") file="$(rclone tree $remoto | dmenu -i -l 20 -p 'elige archivo' | rev | cut -d' ' -f1|rev)" \
-		&& [ -n "$file" ] \
-		&& for i in $file; do
-			rclone purge $remoto/$i || rclone delete $remoto/$i 2>/dev/null 
-		done ;;
-	"subir archivos") for i in $(find . -maxdepth 1 -printf '%P\n'|fzf -m --prompt='elige archivo: '); do
-		rclone copy $i $remoto
-	done;;
+	"eliminar archivos/carpetas")
+		file="$(rclone tree $remoto | dmenu -i -l 20 -p 'elige archivo' | rev | cut -d' ' -f1|rev)" \
+			&& [ -n "$file" ] \
+			&& for i in $file; do
+					rclone delete $remoto/$i || rclone purge $remoto/$i
+				done;;
+	"subir archivos")
+		for i in $(find . -maxdepth 1 -printf '%P\n'|fzf -m --prompt='elige archivo: '); do
+			rclone copy $i $remoto
+		done;;
 	"listar archivos en remoto") rclone tree $remoto ;;
 	"crear directorio remoto") printf "nombre de dir: " && read -r dir && rclone mkdir $remoto$dir ;;
 	"sincronizar archivos") rclone sync $remoto ;;
 	"ver quota") rclone about $remoto ;;
 	"montar disco remoto localmente") rclone mount $remoto /tmp/montar;;
-	"descargar archivo/carpeta") for i in $(rclone tree $remoto | dmenu -i -l 20 -p 'elige archivo: '); do
-		rclone copy $remoto$i /tmp
-	done	;;
+	"descargar archivo/carpeta")
+		for i in $(rclone tree $remoto | dmenu -i -l 20 -p 'elige archivo: ' | cut -d' ' -f2); do
+			rclone copy $remoto$i /tmp
+		done;;
 esac
