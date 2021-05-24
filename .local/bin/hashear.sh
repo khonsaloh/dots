@@ -1,5 +1,12 @@
 #!/bin/sh
-[ -z "$1" ] && echo pon archivo o archivo y hash && exit
+[ -z "$1" ] && echo pon archivo\\narchivo y hash\\no -s y string para hashear string && exit
+
+while getopts ":s:" opt; do
+	case "$opt" in
+		s) "$HOME"/.local/bin/nopath/hash-str $OPTARG && exit ;;
+	esac
+done
+
 red='\033[0;31m'
 green='\033[0;32m'
 echo
