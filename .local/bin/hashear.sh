@@ -1,4 +1,5 @@
 #!/bin/sh
+[ -z "$1" ] && echo pon archivo o archivo y hash && exit
 red='\033[0;31m'
 green='\033[0;32m'
 echo

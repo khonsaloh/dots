@@ -29,7 +29,7 @@ case $opcion in
 	"limpiar cache") sudo apt-get autoclean ; exit;;
 	"comprobar") sudo apt-get check ; exit;;
 	"eliminar paquete debian instalado localmente") lista="$(apt list --installed 2>/dev/null | grep ', local'| cut -d'/' -f1 | fzf -m)" \
-		&& echo "$lista" && for i in "$lista";do
+		&& echo "$lista" && for i in $lista;do
 			sudo dpkg -r $i
 		done	; exit;;
 	"purgar paquetes debian instalados localmente")
@@ -37,7 +37,7 @@ case $opcion in
 			&& sudo dpkg -P $lista ; exit;;
 	"listar paquetes debian instalados localmente") apt list --installed 2>/dev/null | grep ', local' ; exit;;
 	"purgar paquetes") purga=$(dpkg --get-selections | awk '/deinstall/ {print $1}') \
-		&& echo $purga && [ "$(echo 's\nn' | dmenu -p 'quieres purgar? ' )" = 's' ] \
+		&& [ -z "$purga" ] && echo 'no hay nada que purgar' && exit || echo $purga && [ "$(echo 's\nn' | dmenu -p 'quieres purgar? ' )" = 's' ] \
 		&& sudo apt purge $purga && exit || exit;;
 	"instalar deb forzando") dpkg --force-architecture -i $(find . -maxdepth 1 | fzf) ;; #forzar instalacion con arquitectura ajena
 	"reinstalar paquete") printf "paquete a reinstalar: " && read -r pac \
@@ -51,8 +51,13 @@ case $opcion in
 				"descargar paquete") apt download $pac=$paquete ;;
 			esac ;;
 	"descargar paquete deb (sin instalar)") printf "pon paquete: " && read -r pac && apt download "$pac" ;; 
-	"instalar paquete deb") archivo="$(find . -maxdepth 1 | fzf)" && dpkg -I "$archivo" && [ "$(printf 's\nn' | dmenu -p 'queres instalalo? ' )" = 's' ] \
-	&& (sudo dpkg -i "$archivo" || sudo apt-get install -f) ;;
+	"instalar paquete deb") archivo=$(file * --mime-type | grep 'application/vnd.debian.binary-package')
+		if [ -z "$archivo" ]; then
+			echo 'no se detectaron paquetes debian en el presente directorio' && exit
+		else
+			ver=$(echo "$archivo" | fzf) && dpkg -I "$ver" && [ "$(printf 's\nn' | dmenu -p 'queres instalalo? ' )" = 's' ] \
+		&& (sudo dpkg -i "$ver" || sudo apt-get install -f)
+		fi;;
 esac && exit
 
 case $1 in

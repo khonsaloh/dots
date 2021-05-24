@@ -15,7 +15,7 @@ case $a in
 	'codificar cadena de texto a qr') printf '%s' 'pon cadena a encodear: ' && read -r cadena \
 		&& qrencode "$cadena" -o /tmp/"$tiempo".png \
 		&& notify-send "codigo qr generado en /tmp/" ;;
-	'codificar contraseña wifi') sudo awk '/wpa/' /etc/network/interfaces |
+	'codificar contraseña wifi') sudo grep 'wp' /etc/network/interfaces |
 		qrencode -o /tmp/"$tiempo".png \
 		&& notify-send "codigo qr generado en /tmp/" ;;
 	'escanear codigo qr con webcam')  zbarcam --raw ;;
