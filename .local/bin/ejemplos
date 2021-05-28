@@ -1,5 +1,16 @@
 #!/bin/sh
 
 #[ -n "$1" ] && curl -4sf cheat.sh/$@ | less -rc~X || curl -4sf cheat.sh
-[ -n "$1" ] && curl -4sf cheat.sh/"$*" | less -FXr || curl -4sf cheat.sh
+[ -n "$1" ] && curl -4sf cheat.sh/"$*" | less -FXr && exit #|| curl -4sf cheat.sh
 
+menu=$(fzf << GON
+markdown
+html
+ayuda
+GON
+)
+case $menu in
+	"markdown") bat ~/wiki/markdown.md;;
+	"html") bat ~/wiki/html5.md;;
+	"ayuda") curl -4sf cheat.sh;;
+esac

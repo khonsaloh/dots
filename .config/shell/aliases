@@ -31,7 +31,7 @@ alias du='grc du -h' \
 
 alias uu='clear && sudo apt update && sudo apt upgrade'
 alias mount='clear && mount | column -t'
-alias md='bat ~/wiki/markdown.md'
+#alias md='bat ~/wiki/markdown.md'
 alias i='tragar sxiv -to .'
 alias q='exit'
 alias h='htop'
