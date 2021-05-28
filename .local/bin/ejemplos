@@ -7,10 +7,12 @@ menu=$(fzf << GON
 markdown
 html
 ayuda
+css
 GON
 )
 case $menu in
 	"markdown") bat ~/wiki/markdown.md;;
 	"html") bat ~/wiki/html5.md;;
 	"ayuda") curl -4sf cheat.sh;;
+	"css") bat ~/wiki/css.md;;
 esac
