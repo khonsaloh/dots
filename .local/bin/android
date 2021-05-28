@@ -1,4 +1,6 @@
 #!/bin/sh
+
+# debe estar habilitada la opcion transferirir datos o mtp al conectar en el móbil
 jmtpfs -l
 a=$(/usr/bin/df | awk '/jmtpfs/ { print $6}')
 
@@ -7,4 +9,3 @@ a=$(/usr/bin/df | awk '/jmtpfs/ { print $6}')
 b=$(df | awk '/jmtpfs/ { print $6}')
 
 [ -z "$b" ] && notify-send "$(echo android desmontado)" || notify-send "$(echo android montado)"
-

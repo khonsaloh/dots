@@ -24,7 +24,12 @@ EOF
 case $opcion in
 	"ver repositorios") grep -s -h '^#*[ ]*deb' /etc/apt/sources.list.d/* ; exit;;
 	"construir paquete debian") dpkg-deb --build hello_1.0-1 ;;
-	"ver archivos de un paquete deb") dpkg-deb -c "$(find . -maxdepth 1 | fzf)" ; exit;;
+	"ver archivos de un paquete deb") deb="$(file * --mime-type |grep 'application/vnd.debian.binary-package')"
+		if [ -z "$deb" ]; then
+			echo no hay paquetes debian en el presente directorio
+		else
+			dpkg-deb -c $(echo "$deb" | fzf | cut -d':' -f1)
+		fi;;
 	"limpiar debs de cache") sudo apt-get clean ; exit;;
 	"limpiar cache") sudo apt-get autoclean ; exit;;
 	"comprobar") sudo apt-get check ; exit;;
@@ -55,8 +60,9 @@ case $opcion in
 		if [ -z "$archivo" ]; then
 			echo 'no se detectaron paquetes debian en el presente directorio' && exit
 		else
-			ver=$(echo "$archivo" | fzf) && dpkg -I "$ver" && [ "$(printf 's\nn' | dmenu -p 'queres instalalo? ' )" = 's' ] \
-		&& (sudo dpkg -i "$ver" || sudo apt-get install -f)
+			ver=$(echo "$archivo" | fzf | cut -d: -f1) && dpkg -I "$ver" \
+				&& [ "$(printf 's\nn' | dmenu -p 'queres instalalo? ' )" = 's' ] \
+				&& (sudo dpkg -i "$ver" || sudo apt-get install -f)
 		fi;;
 esac && exit
 

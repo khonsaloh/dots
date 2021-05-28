@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#time ( for i in $(seq 1000); do
+#	"$@" >/dev/null
+#done )
+
+i=0
+time ( while [ $i -lt 100 ]
+do
+	i=$(($i+1))
+	"$@" 
+done
+)

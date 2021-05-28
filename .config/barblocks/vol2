@@ -4,6 +4,9 @@ case $BLOCK_BUTTON in
 	1) setsid -f st -e alsamixer;;
 	#3) $HOME/scripts/cmusa;;
 	3) if tmux has; then st -e tmux attach; else st -e tmux new-session cmus; fi;;
+	#3)  st -e ~/descargas/build/abduco-master/abduco -A musica cmus;;
+	#3)  pidof cmus && st -e ~/descargas/build/abduco-master/abduco -a musica cmus \
+	#	|| st -e ~/descargas/build/abduco-master/abduco -c musica cmus;;
 esac
 
 vol=$(amixer sget Master | awk '/%/ {print $4}' | tr -d '[%]')

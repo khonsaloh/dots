@@ -1,5 +1,14 @@
 #!/bin/sh
+case $1 in
+	-e) $EDITOR $(readlink -f "$0") && exit;;
+esac
 
+afile=~/.local/share/agentes_u
+a=$(cut -d'|' -f1 $afile |dmenu -l 30 \
+	-p 'agentes usuario: '  -sb '#7a998d' -nb '#262626' | tr ' ' '_')
+
+grep -w "$a" $afile | cut -d'|' -f2 | xclip -r -sel clipboard
+exit
 a=$( dmenu -l 10  -sb '#7a998d' -nb '#262626' << EOF
 android 7
 firefox windows 10

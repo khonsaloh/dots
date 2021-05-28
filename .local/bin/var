@@ -1,0 +1,12 @@
+#!/bin/sh
+a=$( dmenu -l 10 -p 'gestor de variables'<< GON
+agentes usuario
+colores
+tiempo-fecha
+GON
+)
+case $a in
+	"agentes usuario") $HOME/.local/bin/nopath/agentes-usuario ;; 
+	"colores") $HOME/.local/bin/nopath/colores ;;
+	"tiempo-fecha") $HOME/.local/bin/nopath/hora;;
+esac
