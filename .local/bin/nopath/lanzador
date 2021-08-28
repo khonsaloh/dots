@@ -1,0 +1,21 @@
+#!/bin/sh
+
+archivo_lanz=$HOME/.local/share/launcher.csv
+
+[ -n "$1" ] && case $1 in
+	-a|-add) printf '%s' "pon nombre de la aplicacion a añadir: " && read -r nombre \
+		&& printf '%s' 'pon comando a ejecutar: ' && read -r comando \
+		&& echo "$nombre,$comando" >> $archivo_lanz;;
+	-d|-r) urls=$(fzf --cycle --reverse --prompt='eliminar entrada: ' -m < $archivo_lanz) \
+		&& printf '%s\n' "$urls" | while IFS= read -r line
+		do
+			sed -i "/$line/d" "$archivo_lanz" && notify-send "$line eliminada"
+		done;;
+	-e|e) "$EDITOR" "$archivo_lanz" ;;
+	-h|--help|*) printf "opciones son:\\n-add\\n-d (delete application)\\n-e (edit app file)\\n";;
+esac
+
+[ -n "$1" ] && exit
+
+a="$(cut -d ',' -f1 $archivo_lanz | $HOME/descargas/build/mi-dmenu/dmenu -l 20 )" \
+	&& setsid -f $(grep "^$a" $archivo_lanz | cut -d',' -f2)
