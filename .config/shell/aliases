@@ -20,6 +20,7 @@ alias l='clear && if [ $PWD = $HOME ]; then lsd -h --group-dirs first --no-symli
 	lt='clear && lsd -lAtr'
 #git
 alias dots="/usr/bin/git --git-dir=$HOME/.local/share/dotfiles --work-tree=$HOME" \
+	etc="/usr/bin/git --git-dir=$HOME/.local/share/etc --work-tree=/etc" \
 	gs='git status' \
 	da='dots add'
 

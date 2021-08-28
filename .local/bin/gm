@@ -31,6 +31,7 @@ clonar repo con submódulos
 --> (dotfiles) limpiar historial de imagenes
 renombrar rama (local)
 cambiar alias a remoto
+etc
 EOF
 )
 [ -z "$a" ] && exit
@@ -70,6 +71,9 @@ case $a in
 	"(dotfiles) autoempujar") [ -d $gitdots ] \
 		&& git --git-dir=$gitdots --work-tree=$HOME commit -m "$(date +%Y%m%d%H%M%S)" \
 		&& git --git-dir=$gitdots --work-tree=$HOME remote | xargs -L1 git --git-dir=$gitdots --work-tree=$HOME push --all ;;
+	"etc") etconf="$HOME/.local/share/etc" && [ -d $etconf ] \
+		&& git --git-dir=$etconf --work-tree=/etc commit -m "$(date +%Y%m%d%H%M%S)" \
+		&& git --git-dir=$etconf --work-tree=/etc remote | xargs -L1 git --git-dir=$etconf --work-tree=/etc push --all ;;
 	"--> limpiar historial de imagenes repo git")
 		git branch bridge $(echo "cleaning" | git commit-tree HEAD^{tree}) \
 			&& git checkout bridge && git branch -D master && git branch -m master \

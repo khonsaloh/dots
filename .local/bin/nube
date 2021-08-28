@@ -10,6 +10,7 @@ descargar archivo/carpeta
 ver quota
 crear directorio remoto
 montar disco remoto localmente
+sincronizar archivos/carpetas
 EOF
 )
 
@@ -26,7 +27,7 @@ case $op in
 		done;;
 	"listar archivos en remoto") rclone tree $remoto ;;
 	"crear directorio remoto") printf "nombre de dir: " && read -r dir && rclone mkdir $remoto$dir ;;
-	"sincronizar archivos") rclone sync $remoto ;;
+	"sincronizar archivos/carpetas") archivo=$(find . -maxdepth 1|fzf ) && rclone sync $remoto$archivo ;;
 	"ver quota") rclone about $remoto ;;
 	"montar disco remoto localmente") rclone mount $remoto /tmp/montar;;
 	"descargar archivo/carpeta")

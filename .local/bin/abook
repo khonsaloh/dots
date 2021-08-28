@@ -1,3 +1,0 @@
-#!/bin/sh
-
-/usr/bin/abook -C $HOME/.config/abook/abookrc --datafile $HOME/.config/abook/addressbook
